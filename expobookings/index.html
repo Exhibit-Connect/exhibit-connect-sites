@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Expo Bookings — Fill Your Show Calendar Before You Arrive</title>
+<meta name="description" content="Expo Bookings pre-schedules qualified meetings for B2B exhibitors. Arrive at your next trade show with every hour planned and every meeting confirmed.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,500&family=Libre+Franklin:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
@@ -39,6 +40,7 @@
     line-height: 1.75;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* ── Nav ── */
@@ -124,20 +126,25 @@
 
   .nav-toggle {
     display: none;
+    flex-direction: column;
+    gap: 5px;
     background: none;
     border: none;
     cursor: pointer;
     padding: 4px;
   }
 
-  .nav-toggle svg {
+  .nav-toggle span {
+    display: block;
     width: 24px;
-    height: 24px;
-    stroke: var(--green-deep);
-    fill: none;
-    stroke-width: 2;
-    stroke-linecap: round;
+    height: 1.5px;
+    background: var(--green-deep);
+    transition: all 0.3s;
   }
+
+  .nav-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(4px, 5px); }
+  .nav-toggle.active span:nth-child(2) { opacity: 0; }
+  .nav-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(4px, -5px); }
 
   /* ── Hero ── */
   .hero {
@@ -181,18 +188,6 @@
     0%, 100% { transform: translate(0, 0) rotate(0deg); }
     33% { transform: translate(15px, -20px) rotate(3deg); }
     66% { transform: translate(-10px, 10px) rotate(-2deg); }
-  }
-
-  /* Decorative leaves / lines */
-  .hero-deco {
-    position: absolute;
-    top: 18%;
-    left: 8%;
-    width: 80px;
-    height: 2px;
-    background: var(--terracotta);
-    opacity: 0.2;
-    transform: rotate(-30deg);
   }
 
   .hero-deco-2 {
@@ -321,7 +316,7 @@
   .reveal {
     opacity: 0;
     transform: translateY(30px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .reveal.visible {
@@ -695,7 +690,7 @@
   @media (max-width: 900px) {
     nav { padding: 1rem 1.5rem; }
     .nav-links { display: none; }
-    .nav-toggle { display: block; }
+    .nav-toggle { display: flex; }
 
     .nav-links.open {
       display: flex;
@@ -715,7 +710,7 @@
     .hero h1 { font-size: clamp(2.2rem, 9vw, 3.2rem); }
     .hero-blob-1 { width: 300px; height: 300px; }
     .hero-blob-2 { width: 250px; height: 250px; }
-    .hero-deco, .hero-deco-2 { display: none; }
+    .hero-deco-2 { display: none; }
 
     .what-we-do { padding: 4rem 1.5rem; }
     .what-we-do-body { grid-template-columns: 1fr; gap: 2rem; }
@@ -742,8 +737,8 @@
       <li><a href="#why-us">Approach</a></li>
       <li><a href="#contact" class="nav-cta-link">Start a Conversation</a></li>
     </ul>
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
-      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
     </button>
   </div>
 </nav>
@@ -752,7 +747,6 @@
 <section class="hero">
   <div class="hero-blob-1"></div>
   <div class="hero-blob-2"></div>
-  <div class="hero-deco"></div>
   <div class="hero-deco-2"></div>
   <div class="hero-content">
     <div class="hero-eyebrow">Trade Show Meeting Services</div>
@@ -799,7 +793,7 @@
   <div class="why-us-inner">
     <div class="why-us-header reveal">
       <div class="section-eyebrow">Our Approach</div>
-      <h2>Why Exhibitors <em>Choose Us</em></h2>
+      <h2>Why Exhibitors <em>Choose&nbsp;Us</em></h2>
     </div>
     <div class="prop-grid">
       <div class="prop-card reveal reveal-delay-1">
@@ -872,12 +866,23 @@
   // Nav scroll
   const nav = document.querySelector('nav');
   window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 50);
+    nav.classList.toggle('scrolled', window.scrollY > 80);
   });
 
   // Mobile toggle
-  document.getElementById('navToggle').addEventListener('click', () => {
-    document.getElementById('navLinks').classList.toggle('open');
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+    navToggle.classList.toggle('active');
+  });
+
+  // Auto-close mobile nav on link click
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      navToggle.classList.remove('active');
+    });
   });
 
   // Scroll reveal
@@ -888,7 +893,7 @@
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
 
   document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 

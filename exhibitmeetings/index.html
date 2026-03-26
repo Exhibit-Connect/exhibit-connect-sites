@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Exhibit Meetings — Where Exhibitors Meet Opportunity</title>
+<meta name="description" content="Exhibit Meetings books qualified B2B meetings for trade show exhibitors. Fill your show calendar with decision-makers before you arrive.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -47,6 +48,7 @@
     line-height: 1.7;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* ── Nav ── */
@@ -160,6 +162,10 @@
   .nav-toggle span:nth-child(1) { top: 0; }
   .nav-toggle span:nth-child(2) { top: 9px; }
   .nav-toggle span:nth-child(3) { top: 18px; }
+
+  .nav-toggle.active span:nth-child(1) { top: 9px; transform: rotate(45deg); }
+  .nav-toggle.active span:nth-child(2) { opacity: 0; }
+  .nav-toggle.active span:nth-child(3) { top: 9px; transform: rotate(-45deg); }
 
   /* ── Hero ── */
   .hero {
@@ -348,6 +354,7 @@
   .stats {
     padding: 0 2rem;
     margin-top: -3rem;
+    margin-bottom: 3rem;
     position: relative;
     z-index: 3;
   }
@@ -405,6 +412,10 @@
     opacity: 1;
     transform: translateY(0);
   }
+
+  .section-fade.delay-1 { transition-delay: 0.1s; }
+  .section-fade.delay-2 { transition-delay: 0.2s; }
+  .section-fade.delay-3 { transition-delay: 0.3s; }
 
   .section-tag {
     display: inline-flex;
@@ -864,7 +875,7 @@
       <li><a href="#why-us">Solutions</a></li>
       <li><a href="#contact" class="nav-cta-btn">Book a Demo</a></li>
     </ul>
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
       <span></span><span></span><span></span>
     </button>
   </div>
@@ -948,21 +959,21 @@
       <h2>Built to Deliver Results</h2>
     </div>
     <div class="cards">
-      <div class="card section-fade">
+      <div class="card section-fade delay-1">
         <div class="card-icon">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
         </div>
         <h3>Data-Driven Targeting</h3>
         <p>We don't spray and pray. Our targeting engine analyzes attendee data, buyer intent signals, and firmographic fit to identify the prospects most likely to convert at your booth.</p>
       </div>
-      <div class="card section-fade">
+      <div class="card section-fade delay-2">
         <div class="card-icon">
           <svg viewBox="0 0 24 24"><path d="M22 2L11 13"></path><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
         </div>
         <h3>Managed Outreach Campaigns</h3>
         <p>Our team crafts and sends personalized outreach sequences on your behalf — multi-touch campaigns that secure confirmed meetings with qualified contacts, weeks before the show.</p>
       </div>
-      <div class="card section-fade">
+      <div class="card section-fade delay-3">
         <div class="card-icon">
           <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
         </div>
@@ -1020,23 +1031,34 @@
   // Nav scroll
   const nav = document.querySelector('nav');
   window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 50);
+    nav.classList.toggle('scrolled', window.scrollY > 80);
   });
 
   // Mobile toggle
-  document.getElementById('navToggle').addEventListener('click', () => {
-    document.getElementById('navLinks').classList.toggle('open');
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+    navToggle.classList.toggle('active');
+  });
+
+  // Auto-close mobile nav on link click
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      navToggle.classList.remove('active');
+    });
   });
 
   // Scroll reveal
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
+    entries.forEach(entry => {
       if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), i * 100);
+        entry.target.classList.add('visible');
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -50px 0px' });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
 
   document.querySelectorAll('.section-fade').forEach(el => observer.observe(el));
 
