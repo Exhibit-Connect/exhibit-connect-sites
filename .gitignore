@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Local tooling / editor config
+.claude/
+
+# Nested repo — has its own git remote (Exhibit-Connect/exhibit-connect-sites)
+exhibit-connect-sites/
+
+# MCP / local tooling config
+.mcp.json
+
+# Sensitive business/legal documents — keep local, never push
+Business & Legal/
