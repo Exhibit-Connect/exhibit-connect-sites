@@ -1,9 +1,20 @@
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
 const sites = [
   "boothconnect.co",
   "exhibitmeetings.co",
   "expobookings.co",
   "exhibitconnect.co",
 ];
+const previewBases = process.env.PREVIEW_BASES ? JSON.parse(process.env.PREVIEW_BASES) : {};
+const siteDirs = {
+  "boothconnect.co": "boothconnect",
+  "exhibitmeetings.co": "exhibitmeetings",
+  "expobookings.co": "expobookings",
+  "exhibitconnect.co": "exhibitconnect",
+};
 const routes = ["/", "/about/", "/contact/", "/privacy/", "/terms/"];
 const resources = [
   ["/", "text/html"],
@@ -38,6 +49,51 @@ function fail(site, message) {
 }
 
 async function read(url, { redirect = "follow", binary = false } = {}) {
+  const preview = Object.entries(previewBases).find(([, base]) => url.startsWith(base.replace(/\/$/, "")));
+  if (preview) {
+    const [site, deployment] = preview;
+    const target = new URL(url);
+    const args = [
+      "curl",
+      `${target.pathname}${target.search}`,
+      "--deployment",
+      deployment,
+      "--cwd",
+      siteDirs[site],
+      "--yes",
+    ];
+    if (process.env.VERCEL_SCOPE) args.push("--scope", process.env.VERCEL_SCOPE);
+    args.push("--", "--silent", "--show-error", "--include");
+    try {
+      const { stdout } = await execFileAsync(process.env.VERCEL_BIN || "vercel", args, {
+        encoding: "buffer",
+        maxBuffer: 12 * 1024 * 1024,
+      });
+      const crlfEnd = stdout.indexOf(Buffer.from("\r\n\r\n"));
+      const lfEnd = stdout.indexOf(Buffer.from("\n\n"));
+      const headerEnd = crlfEnd >= 0 ? crlfEnd : lfEnd;
+      const separatorLength = crlfEnd >= 0 ? 4 : 2;
+      if (headerEnd < 0) throw new Error("Vercel preview response did not include headers");
+      const headerText = stdout.subarray(0, headerEnd).toString("utf8");
+      const lines = headerText.split(/\r?\n/);
+      const status = Number(lines.shift()?.match(/\s(\d{3})(?:\s|$)/)?.[1]);
+      const headerValues = new Map();
+      for (const line of lines) {
+        const separator = line.indexOf(":");
+        if (separator < 0) continue;
+        headerValues.set(line.slice(0, separator).toLowerCase(), line.slice(separator + 1).trim());
+      }
+      const bodyBuffer = stdout.subarray(headerEnd + separatorLength);
+      const headers = { get: (name) => headerValues.get(name.toLowerCase()) || null };
+      return {
+        response: { status, headers },
+        type: headers.get("content-type") || "",
+        body: binary ? bodyBuffer : bodyBuffer.toString("utf8"),
+      };
+    } catch (error) {
+      return { error };
+    }
+  }
   try {
     const response = await fetch(url, {
       redirect,
@@ -96,22 +152,33 @@ function checkIndexablePage(site, route, body) {
 
 for (const site of sites) {
   const base = `https://www.${site}`;
-  console.log(`\n${site}`);
+  const requestBase = (previewBases[site] || base).replace(/\/$/, "");
+  console.log(`\n${site}${requestBase === base ? "" : ` preview ${requestBase}`}`);
 
-  const apex = await read(`https://${site}/`, { redirect: "manual" });
-  if (apex.error) {
-    fail(site, `apex redirect request failed: ${apex.error.message}`);
-  } else if (![301, 302, 307, 308].includes(apex.response.status)) {
-    fail(site, `apex returned ${apex.response.status}; expected redirect`);
-  } else {
-    const location = apex.response.headers.get("location");
-    const target = location ? new URL(location, `https://${site}/`).href : "";
-    if (target !== `${base}/`) fail(site, `apex redirects to ${target || "nothing"}; expected ${base}/`);
+  if (requestBase === base) {
+    const apex = await read(`https://${site}/`, { redirect: "manual" });
+    if (apex.error) {
+      fail(site, `apex redirect request failed: ${apex.error.message}`);
+    } else if (![301, 302, 307, 308].includes(apex.response.status)) {
+      fail(site, `apex returned ${apex.response.status}; expected redirect`);
+    } else {
+      const location = apex.response.headers.get("location");
+      const target = location ? new URL(location, `https://${site}/`).href : "";
+      if (target !== `${base}/`) fail(site, `apex redirects to ${target || "nothing"}; expected ${base}/`);
+    }
   }
 
   const bodies = new Map();
-  for (const [path, expectedType] of resources) {
-    const result = await read(`${base}${path}`, { binary: expectedType === "image/png" });
+  const resourceResults = await Promise.all(
+    resources.map(async ([path, expectedType]) => [
+      path,
+      expectedType,
+      await read(`${requestBase}${path}`, { binary: expectedType === "image/png" }),
+    ]),
+  );
+  const fetched = new Map();
+  for (const [path, expectedType, result] of resourceResults) {
+    fetched.set(path, result);
     if (result.error) {
       fail(site, `${path} request failed: ${result.error.message}`);
       continue;
@@ -122,7 +189,7 @@ for (const site of sites) {
     console.log(`  ${result.response.status === 200 ? "ok" : "fail"} ${path}`);
   }
 
-  const homeResult = await read(`${base}/`);
+  const homeResult = fetched.get("/");
   if (!homeResult.error) {
     const headers = homeResult.response.headers;
     const csp = headers.get("content-security-policy") || "";
@@ -162,7 +229,7 @@ for (const site of sites) {
     fail(site, `sitemap URLs do not exactly match the five approved routes: ${locations.join(", ")}`);
   }
 
-  const ogResult = await read(`${base}/assets/og.png`, { binary: true });
+  const ogResult = fetched.get("/assets/og.png");
   if (!ogResult.error && ogResult.response.status === 200) {
     try {
       const [width, height] = pngSize(ogResult.body);
@@ -172,7 +239,7 @@ for (const site of sites) {
     }
   }
 
-  const missing = await read(`${base}/__codex-site-check-${Date.now()}/`);
+  const missing = await read(`${requestBase}/__codex-site-check-${Date.now()}/`);
   if (missing.error) {
     fail(site, `404 request failed: ${missing.error.message}`);
   } else {
