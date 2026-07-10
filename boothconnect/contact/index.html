@@ -1,70 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Contact Booth Connect</title>
-<meta name="description" content="Contact Booth Connect for trade show meeting coordination and service questions.">
-<link rel="canonical" href="https://www.boothconnect.co/contact/">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Contact Booth Connect">
-<meta property="og:description" content="Contact Booth Connect for trade show meeting coordination and service questions.">
-<meta property="og:url" content="https://www.boothconnect.co/contact/">
-<meta property="og:site_name" content="Booth Connect">
-<meta property="og:image" content="https://www.boothconnect.co/assets/hero.jpg">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://www.boothconnect.co/assets/hero.jpg">
-<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/assets/site.css">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Booth Connect","legalName":"Exhibit Connect LLC","url":"https://www.boothconnect.co/","email":"joseph@exhibitconnect.co","areaServed":"United States","address":{"@type":"PostalAddress","addressRegion":"NJ","addressCountry":"US"}}</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Booth Connect</title>
+  <meta name="description" content="Contact Booth Connect about trade show meeting preparation and coordination.">
+  <link rel="canonical" href="https://www.boothconnect.co/contact/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Contact Booth Connect">
+  <meta property="og:description" content="Contact Booth Connect about trade show meeting preparation and coordination.">
+  <meta property="og:url" content="https://www.boothconnect.co/contact/">
+  <meta property="og:site_name" content="Booth Connect">
+  <meta property="og:image" content="https://www.boothconnect.co/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Booth Connect — Make the booth worth the trip.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Contact Booth Connect">
+  <meta name="twitter:description" content="Contact Booth Connect about trade show meeting preparation and coordination.">
+  <meta name="twitter:image" content="https://www.boothconnect.co/assets/og.png">
+  <meta name="twitter:image:alt" content="Booth Connect — Make the booth worth the trip.">
+  <link rel="icon" href="/assets/favicon.png" type="image/png" sizes="64x64">
+  <link rel="stylesheet" href="/assets/site.css?v=20260709">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Booth Connect","legalName":"Exhibit Connect LLC","url":"https://www.boothconnect.co/","email":"joseph@exhibitconnect.co","areaServed":"United States","address":{"@type":"PostalAddress","addressRegion":"NJ","addressCountry":"US"}}</script>
 </head>
-<body class="booth" style="--accent:#b88a24">
-
+<body class="theme-booth">
+  <a class="skip-link" href="#main-content">Skip to content</a>
 <header class="site-header">
   <a class="brand" href="/" aria-label="Booth Connect home">
-    <span class="brand-mark" aria-hidden="true"></span>
-    <span>Booth Connect</span>
+    <span class="brand-mark brand-mark--booth" aria-hidden="true"><span>BC</span></span>
+    <span class="brand-name">Booth Connect</span>
   </a>
   <nav aria-label="Primary navigation">
+    <a href="/#process">Process</a>
+    <a href="/#deliverables">Deliverables</a>
     <a href="/about/">About</a>
-    <a href="/contact/">Contact</a>
-    <a href="/privacy/">Privacy</a>
-    <a href="/terms/">Terms</a>
+    <a class="nav-contact" href="/contact/" aria-current="page">Contact</a>
   </nav>
 </header>
-<main>
-
-<section class="page-hero">
-  <p class="eyebrow">Contact</p>
-  <h1>Talk with us about your next trade show.</h1>
-  <p class="lede">Share the show, your goals, and the type of companies or contacts you want to meet. We normally respond within one business day.</p>
+  <main id="main-content">
+    <section class="page-hero page-hero--contact">
+  <p class="eyebrow">Contact Booth Connect</p>
+  <h1>Start with the show, the goal, and the people attending.</h1>
+  <p class="lede">Share what your team is preparing for. We normally respond within one business day to discuss fit, boundaries, and next steps.</p>
 </section>
-<section class="contact-layout">
+<section class="section contact-layout">
   <form class="contact-form" action="https://formsubmit.co/joseph@exhibitconnect.co" method="POST">
     <input type="hidden" name="_subject" value="New inquiry from Booth Connect">
-    <input type="text" name="_honey" class="honeypot" tabindex="-1" autocomplete="off">
+    <input type="hidden" name="_next" value="https://www.boothconnect.co/thank-you/">
     <input type="hidden" name="_captcha" value="false">
-    <label>Name <input name="name" type="text" autocomplete="name" required></label>
-    <label>Company <input name="company" type="text" autocomplete="organization"></label>
+    <input type="text" name="_honey" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div class="form-row">
+      <label>Name <input name="name" type="text" autocomplete="name" required></label>
+      <label>Company <input name="company" type="text" autocomplete="organization"></label>
+    </div>
     <label>Email <input name="email" type="email" autocomplete="email" required></label>
-    <label>Upcoming show <input name="show" type="text" placeholder="Example: Pack Expo, NRF, IMTS"></label>
+    <label>Upcoming show <input name="show" type="text" placeholder="Show name and dates"></label>
+    <label>Meeting goal <input name="goal" type="text" placeholder="Who would make the show more useful?"></label>
     <label>Message <textarea name="message" rows="6" required></textarea></label>
     <button class="button" type="submit">Send inquiry</button>
+    <p class="form-note">Your information is used to respond to this inquiry and manage the business relationship. Read the <a href="/privacy/">Privacy Policy</a>.</p>
   </form>
   <aside class="contact-card">
-    <h2>Direct contact</h2>
-    <p>Email <a href="mailto:joseph@exhibitconnect.co">joseph@exhibitconnect.co</a></p>
-    <p>Exhibit Connect LLC<br>New Jersey, USA</p>
-    <p class="small">If you are contacting us about an outreach message or removal request, include the email address that received the message so we can process the request accurately.</p>
+    <p class="eyebrow">Direct contact</p>
+    <h2>Prefer email?</h2>
+    <a class="contact-email" href="mailto:joseph@exhibitconnect.co">joseph@exhibitconnect.co</a>
+    <dl>
+      <div><dt>Operator</dt><dd>Exhibit Connect LLC</dd></div>
+      <div><dt>Location</dt><dd>New Jersey, USA</dd></div>
+      <div><dt>Response</dt><dd>Normally within one business day</dd></div>
+    </dl>
+    <p class="fine-print">For an outreach removal request, include the address that received the message so the request can be processed accurately.</p>
   </aside>
 </section>
-</main>
-
-<footer class="site-footer">
-  <div>
-    <strong>Booth Connect</strong>
-    <p>Booth ROI and meeting strategy for B2B exhibitors.</p>
-    <p>Operated by Exhibit Connect LLC. New Jersey, USA.</p>
+  </main>
+  <footer class="site-footer">
+  <div class="footer-brand">
+    <a class="brand" href="/" aria-label="Booth Connect home">
+      <span class="brand-mark brand-mark--booth" aria-hidden="true"><span>BC</span></span>
+      <span class="brand-name">Booth Connect</span>
+    </a>
+    <p>Operated by Exhibit Connect LLC.</p>
+    <p>New Jersey, USA.</p>
+  </div>
+  <div class="footer-contact">
+    <p class="footer-label">Questions or removal requests</p>
+    <a href="mailto:joseph@exhibitconnect.co">joseph@exhibitconnect.co</a>
   </div>
   <nav aria-label="Footer navigation">
     <a href="/about/">About</a>
